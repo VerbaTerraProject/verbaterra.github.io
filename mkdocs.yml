@@ -1,0 +1,11 @@
+site_name: VerbaTerra Simulation Lab
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Usage: usage.md
+  - API: api.md
+plugins: []
+markdown_extensions:
+  - admonition
+  - tables

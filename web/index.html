@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VerbaTerra WASM Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>VerbaTerra — Browser NLIS/CRM (Pyodide)</h1>
+  <p>Runs a tiny simulation in your browser via Pyodide (no server).</p>
+  <button id="run">Run</button>
+  <pre id="out"></pre>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <script>
+    let pyodideReadyPromise = loadPyodide();
+    document.getElementById("run").onclick = async () => {
+      let py = await pyodideReadyPromise;
+      await py.runPythonAsync(`
+import math, random
+def nlis(l_syntax, l_semflex, l_lexdiv, l_borrow):
+    return 0.35*l_syntax + 0.30*l_semflex + 0.25*l_lexdiv + 0.10*l_borrow
+def crm(c_trade, l_lexdiv, nlis_val, l_borrow):
+    return 0.30*c_trade + 0.25*l_lexdiv + 0.25*nlis_val + 0.20*l_borrow
+vals = []
+random.seed(42)
+for _ in range(5):
+    l1 = random.uniform(4,9)
+    l2 = random.uniform(4,9)
+    l3 = random.uniform(4,9)
+    l4 = random.uniform(4,9)
+    c_trade = random.uniform(4,9)
+    n = nlis(l1,l2,l3,l4)
+    vals.append((round(n,2), round(crm(c_trade,l3,n,l4),2)))
+out = "\n".join(f"NLIS={a} CRM={b}" for a,b in vals)
+`);
+      document.getElementById("out").textContent = py.globals.get("out");
+    }
+  </script>
+</body>
+</html>
